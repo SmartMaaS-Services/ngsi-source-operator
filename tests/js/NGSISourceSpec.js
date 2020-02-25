@@ -30,6 +30,9 @@
                 type: 'operator',
                 prefs: {
                     'query': '',
+                    'georel': '',
+                    'geometry': '',
+                    'coords': '',
                     'ngsi_entities': '',
                     'ngsi_id_filter': '',
                     'ngsi_proxy': 'https://ngsiproxy.example.com',

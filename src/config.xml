@@ -73,6 +73,24 @@
             description="Filter entities by providing a query using the Simple Query Language."
             default="" />
         <preference
+            name="georel"
+            type="text"
+            label="georel"
+            description="Georel is intended to specify a spatial relationship (a predicate) between matching entities and a reference shape (geometry)."
+            default="" />
+        <preference
+            name="geometry"
+            type="text"
+            label="geometry"
+            description="Geometry allows to define the reference shape to be used when resolving the query."
+            default="" />
+        <preference
+            name="coords"
+            type="text"
+            label="coords"
+            description="Coords must be a string containing a semicolon-separated list of pairs of geographical coordinates."
+            default="" />
+        <preference
             name="ngsi_update_attributes"
             type="text"
             label="Monitored NGSI Attributes"

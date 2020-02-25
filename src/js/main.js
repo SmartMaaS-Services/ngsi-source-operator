@@ -126,21 +126,49 @@
             filter = undefined;
         }
 
+        var georel = MashupPlatform.prefs.get('georel').trim();
+        var geometry = MashupPlatform.prefs.get('geometry').trim();
+        var coords = MashupPlatform.prefs.get('coords').trim();
+        if (georel === '' || geometry === '' || coords === '') {
+            georel = undefined;
+            geometry = undefined;
+            coords = undefined;
+        }
+
         var condition = undefined;
-        if (filter != null || attrs !== "") {
+        if (filter != null || attrs !== "" || (georel != null && geometry != null && coords != null)) {
             condition = {};
         }
-        if (attrs !== "") {
-            condition.attrs = attrs.split(new RegExp(',\\s*'));
-        }
-        if (filter != null) {
+
+        if (filter != null && (georel === undefined || geometry === undefined || coords === undefined)) {
             condition.expression = {
                 q: filter
             };
         }
 
+        if(filter != null && (georel != null && geometry != null && coords != null)) {
+            condition.expression = {
+                q: filter,
+                georel: georel,
+                geometry: geometry,
+                coords: coords
+            };
+        }
+
+        if(filter == null && (georel != null && geometry != null && coords != null)) {
+            condition.expression = {
+                georel: georel,
+                geometry: geometry,
+                coords: coords
+            };
+        }
+
+        if (attrs !== "") {
+            condition.attrs = attrs.split(new RegExp(',\\s*'));
+        }
+
         if (attrs === "") {
-            doInitialQueries.call(this, id_pattern, types, filter);
+            doInitialQueries.call(this, id_pattern, types, filter, georel, geometry, coords);
         } else {
             var entities = [];
             if (types != null) {
@@ -175,7 +203,7 @@
                     MashupPlatform.operator.log("Subscription created successfully (id: " + response.subscription.id + ")", MashupPlatform.log.INFO);
                     this.subscriptionId = response.subscription.id;
                     this.refresh_interval = setInterval(refreshNGSISubscription.bind(this), 1000 * 60 * 60 * 2);  // each 2 hours
-                    doInitialQueries.call(this, id_pattern, types, filter);
+                    doInitialQueries.call(this, id_pattern, types, filter, georel, geometry, coords);
                 },
                 (e) => {
                     if (e instanceof NGSI.ProxyConnectionError) {
@@ -204,7 +232,7 @@
         }
     };
 
-    var requestInitialData = function requestInitialData(idPattern, types, filter, attrsFormat, page) {
+    var requestInitialData = function requestInitialData(idPattern, types, filter, georel, geometry, coords, attrsFormat, page) {
         return this.connection.v2.listEntities(
             {
                 idPattern: idPattern,
@@ -213,13 +241,16 @@
                 keyValues: attrsFormat === "keyValues",
                 limit: 100,
                 offset: page * 100,
-                q: filter
+                q: filter,
+                georel: georel,
+                geometry: geometry,
+                coords: coords
             }
         ).then(
             (response) => {
                 handlerReceiveEntities.call(this, attrsFormat, response.results);
                 if (page < 100 && (page + 1) * 100 < response.count) {
-                    return requestInitialData.call(this, idPattern, types, filter, attrsFormat, page + 1);
+                    return requestInitialData.call(this, idPattern, types, filter, georel, geometry, coords, attrsFormat, page + 1);
                 }
             },
             () => {
@@ -228,9 +259,9 @@
         );
     };
 
-    var doInitialQueries = function doInitialQueries(idPattern, types, filter) {
+    var doInitialQueries = function doInitialQueries(idPattern, types, filter, georel, geometry, coords) {
         let attrsFormat = MashupPlatform.operator.outputs.normalizedOutput.connected ? "normalized" : "keyValues";
-        this.query_task = requestInitialData.call(this, idPattern, types, filter, attrsFormat, 0);
+        this.query_task = requestInitialData.call(this, idPattern, types, filter, georel, geometry, coords, attrsFormat, 0);
     };
 
     const normalize2KeyValue = function normalize2KeyValue(entity) {
@@ -302,6 +333,9 @@
                 auth_type: "",  // Not present in NGSI-source
                 idPattern: MashupPlatform.prefs.get('ngsi_id_filter').trim(),
                 query: MashupPlatform.prefs.get('query').trim(),
+                georel: MashupPlatform.prefs.get('georel').trim(),
+                geometry: MashupPlatform.prefs.get('geometry').trim(),
+                coords: MashupPlatform.prefs.get('coords').trim(),
                 values: false, // Not needed in NGSI-source
                 serverURL: MashupPlatform.prefs.get('ngsi_server').trim(),
                 proxyURL: MashupPlatform.prefs.get('ngsi_proxy').trim(),
@@ -312,7 +346,7 @@
             };
             MashupPlatform.wiring.pushEvent('ngsimetadata', metadata);
         }
-    }
+    };
 
     /* import-block */
     window.NGSISource = NGSISource;
