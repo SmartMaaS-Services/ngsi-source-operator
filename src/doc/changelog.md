@@ -1,3 +1,8 @@
+## v4.2.0 (2020-05-05)
+- Added parameter limit to allow clients to determine the amount of 
+  resources requested. The previous limit and pagination to 100 is now 
+  assumed to be default (limit = 1000 is the maximum allowed).
+
 ## v4.2.0 (2019-11-XX)
 
 - Added a new output endpoint for retrieving entities using the `normalized`

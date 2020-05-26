@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<operator xmlns="http://wirecloud.conwet.fi.upm.es/ns/macdescription/1" vendor="CoNWeT" name="ngsi-source" version="4.2.0b2">
+<operator xmlns="http://wirecloud.conwet.fi.upm.es/ns/macdescription/1" vendor="CoNWeT" name="ngsi-source" version="4.2.0b3">
     <details>
         <title>NGSI source</title>
         <homepage>https://github.com/wirecloud-fiware/ngsi-source</homepage>
@@ -73,22 +73,28 @@
             description="Filter entities by providing a query using the Simple Query Language."
             default="" />
         <preference
+            name="limit"
+            type="text"
+            label="Limit"
+            description="Limit is a parameter, in order to specify the maximum number of elements (default is 100, maximum allowed is 1000)."
+            default="100" />
+        <preference
             name="georel"
             type="text"
-            label="georel"
-            description="Georel is intended to specify a spatial relationship (a predicate) between matching entities and a reference shape (geometry)."
+            label="Georel"
+            description="Parameter for geographical queries. Georel intended to specify a spatial relationship (a predicate) between matching entities and a reference shape (geometry)."
             default="" />
         <preference
             name="geometry"
             type="text"
-            label="geometry"
-            description="Geometry allows to define the reference shape to be used when resolving the query."
+            label="Geometry"
+            description="Parameter for geographical queries. Geometry allows to define the reference shape to be used when resolving the query."
             default="" />
         <preference
             name="coords"
             type="text"
-            label="coords"
-            description="Coords must be a string containing a semicolon-separated list of pairs of geographical coordinates."
+            label="Coords"
+            description="Parameter for geographical queries. Coords must be a string containing a semicolon-separated list of pairs of geographical coordinates."
             default="" />
         <preference
             name="ngsi_update_attributes"

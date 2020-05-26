@@ -120,6 +120,11 @@
             id_pattern = '.*';
         }
 
+        var limit = parseInt(MashupPlatform.prefs.get('limit').trim());
+        if (isNaN(limit)) {
+            limit = 100;
+        }
+
         var filter = MashupPlatform.prefs.get('query').trim();
         var attrs = MashupPlatform.prefs.get('ngsi_update_attributes').trim();
         if (filter === '') {
@@ -168,7 +173,7 @@
         }
 
         if (attrs === "") {
-            doInitialQueries.call(this, id_pattern, types, filter, georel, geometry, coords);
+            doInitialQueries.call(this, id_pattern, types, filter, limit, georel, geometry, coords);
         } else {
             var entities = [];
             if (types != null) {
@@ -203,7 +208,7 @@
                     MashupPlatform.operator.log("Subscription created successfully (id: " + response.subscription.id + ")", MashupPlatform.log.INFO);
                     this.subscriptionId = response.subscription.id;
                     this.refresh_interval = setInterval(refreshNGSISubscription.bind(this), 1000 * 60 * 60 * 2);  // each 2 hours
-                    doInitialQueries.call(this, id_pattern, types, filter, georel, geometry, coords);
+                    doInitialQueries.call(this, id_pattern, types, filter, limit, georel, geometry, coords);
                 },
                 (e) => {
                     if (e instanceof NGSI.ProxyConnectionError) {
@@ -232,15 +237,16 @@
         }
     };
 
-    var requestInitialData = function requestInitialData(idPattern, types, filter, georel, geometry, coords, attrsFormat, page) {
+    var requestInitialData = function requestInitialData(idPattern, types, filter, limit, georel, geometry, coords, attrsFormat, page) {
+        console.log('idPattern, types, filter, limit, georel, geometry, coords, attrsFormat, page', idPattern, types, filter, limit, georel, geometry, coords, attrsFormat, page);
         return this.connection.v2.listEntities(
             {
                 idPattern: idPattern,
                 type: types,
                 count: true,
                 keyValues: attrsFormat === "keyValues",
-                limit: 100,
-                offset: page * 100,
+                limit: limit,
+                offset: page * limit,
                 q: filter,
                 georel: georel,
                 geometry: geometry,
@@ -249,8 +255,8 @@
         ).then(
             (response) => {
                 handlerReceiveEntities.call(this, attrsFormat, response.results);
-                if (page < 100 && (page + 1) * 100 < response.count) {
-                    return requestInitialData.call(this, idPattern, types, filter, georel, geometry, coords, attrsFormat, page + 1);
+                if (page < limit && (page + 1) * limit < response.count) {
+                    return requestInitialData.call(this, idPattern, types, filter, limit, georel, geometry, coords, attrsFormat, page + 1);
                 }
             },
             () => {
@@ -259,9 +265,9 @@
         );
     };
 
-    var doInitialQueries = function doInitialQueries(idPattern, types, filter, georel, geometry, coords) {
+    var doInitialQueries = function doInitialQueries(idPattern, types, filter, limit, georel, geometry, coords) {
         let attrsFormat = MashupPlatform.operator.outputs.normalizedOutput.connected ? "normalized" : "keyValues";
-        this.query_task = requestInitialData.call(this, idPattern, types, filter, georel, geometry, coords, attrsFormat, 0);
+        this.query_task = requestInitialData.call(this, idPattern, types, filter, limit, georel, geometry, coords, attrsFormat, 0);
     };
 
     const normalize2KeyValue = function normalize2KeyValue(entity) {
@@ -333,6 +339,7 @@
                 auth_type: "",  // Not present in NGSI-source
                 idPattern: MashupPlatform.prefs.get('ngsi_id_filter').trim(),
                 query: MashupPlatform.prefs.get('query').trim(),
+                limit: MashupPlatform.prefs.get('limit').trim(),
                 georel: MashupPlatform.prefs.get('georel').trim(),
                 geometry: MashupPlatform.prefs.get('geometry').trim(),
                 coords: MashupPlatform.prefs.get('coords').trim(),

@@ -30,6 +30,7 @@
                 type: 'operator',
                 prefs: {
                     'query': '',
+                    'limit': '100',
                     'georel': '',
                     'geometry': '',
                     'coords': '',
