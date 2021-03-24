@@ -1,3 +1,5 @@
+[![](https://nexus.lab.fiware.org/repository/raw/public/badges/chapters/visualization.svg)](https://www.fiware.org/developers/catalogue/)
+
 # NGSI source operator
 
 [![](https://nexus.lab.fiware.org/repository/raw/public/badges/chapters/visualization.svg)](https://www.fiware.org/developers/catalogue/)
@@ -9,10 +11,22 @@ The NGSI source operator is a [WireCloud operator](http://wirecloud.readthedocs.
 subscription support to your dashboards in a simple way. Those subscriptions are a great feature provided by the
 [Orion Context Broker](http://catalogue.fiware.org/enablers/publishsubscribe-context-broker-orion-context-broker).
 
+<p align="center">
+    <img src="src/images/ngsi_source_operator.png" alt="Operator" width="80%">
+</p>
+
 Latest version of this operator is always
 [provided in FIWARE Lab](https://store.lab.fiware.org/search/keyword/OrionStarterKit) where you can make use of it on
 the [Mashup portal](https://mashup.lab.fiware.org). Remember to take a look into the example mashups provided in the
 OrionStarterKit offering.
+
+## Settings
+
+An example with AirQualityObserved NGSIv2 Data:
+
+<p align="center">
+    <img src="src/images/ngsi_source_settings.png" alt="Operator" width="80%">
+</p>
 
 ## Build
 
